@@ -24,24 +24,30 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             // Device does not support Bluetooth
-        }
 
-        //Second step is to make sure bluetooth is enabled.
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        } else {
+
+            //Second step is to make sure bluetooth is enabled.
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            }
+
         }
 
 
     }
 
+
     @Override
     protected void onStart(){
         super.onStart();
 
-        //Listen for changes in Bluetooth state.
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(detectBTreceiver, filter);
+        if(mBluetoothAdapter != null) {
+            //Listen for changes in Bluetooth state.
+            IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+            registerReceiver(detectBTreceiver, filter);
+        }
 
     }
 
@@ -49,8 +55,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop(){
         super.onStop();
 
-        //Make sure Broadcast Receivers are unregistered.
-        unregisterReceiver(detectBTreceiver);
+        if(mBluetoothAdapter != null) {
+            //Make sure Broadcast Receivers are unregistered.
+            unregisterReceiver(detectBTreceiver);
+        }
 
     }
 
