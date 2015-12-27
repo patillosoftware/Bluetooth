@@ -1,8 +1,10 @@
 package com.patillosoftware.example.bluetooth;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +26,16 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             // Device does not support Bluetooth
-
+            new AlertDialog.Builder(this)
+                    .setTitle("Bluetooth")
+                    .setMessage("This device does not support bluetooth.")
+                    .setNeutralButton(R.string.exit, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.this.finish();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         } else {
 
             //Second step is to make sure bluetooth is enabled.
@@ -69,6 +80,24 @@ public class MainActivity extends AppCompatActivity {
             //Did the request to enable bluetooth succeed???
             if (resultCode == RESULT_OK) {
 
+            } else {
+                new AlertDialog.Builder(this)
+                        .setTitle("Bluetooth")
+                        .setMessage("Bluetooth is not enabled.")
+                        .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                //Try enabling bluetooth again.
+                                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                            }
+                        })
+                        .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                MainActivity.this.finish();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
         }
 
